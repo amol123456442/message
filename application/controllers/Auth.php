@@ -18,17 +18,19 @@ class Auth extends CI_Controller {
         $this->load->view('register');
     }
 
-    public function register_action() {
-        $data = [
-            'full_name' => $this->input->post('full_name'),
-            'email' => $this->input->post('email'),
-            'employee_id' => $this->input->post('employee_id'),
-            'password' => password_hash($this->input->post('password'), PASSWORD_DEFAULT)
-        ];
+  public function register_action() {
+    $data = [
+        'full_name' => $this->input->post('full_name'),
+        'email' => $this->input->post('email'),
+        'employee_id' => $this->input->post('employee_id'),
+        'department' => $this->input->post('department'),
+        'password' => password_hash($this->input->post('password'), PASSWORD_DEFAULT)
+    ];
 
-        $this->User_model->register($data);
-        redirect('auth/login');
-    }
+    $this->User_model->register($data);
+    $this->session->set_flashdata('success', 'Registration successful!');
+    redirect('auth/login');
+}
 
     public function login_action() {
         $employee_id = $this->input->post('employee_id');
@@ -52,4 +54,5 @@ class Auth extends CI_Controller {
         $this->session->sess_destroy();
         redirect('auth/login');
     }
+    
 }

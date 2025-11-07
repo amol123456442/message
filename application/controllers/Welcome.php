@@ -17,12 +17,14 @@ class Welcome extends CI_Controller
 	}
 
 	public function index()
-{
-    $user_id = $this->session->userdata('user_id');
-    $data['user_name'] = $this->session->userdata('user_name'); // ✅ use 'user_name'
-    $data['users'] = $this->User_model->get_all_users_except($user_id);
-    $this->load->view('home', $data);
-}
+	{
+		$user_id = $this->session->userdata('user_id');
+		$data['user_name'] = $this->session->userdata('user_name'); // ✅ use 'user_name'
+		$data['users'] = $this->User_model->get_all_users_except($user_id);
+
+		$this->User_model->update_last_seen($user_id);
+		$this->load->view('home', $data);
+	}
 	public function get_messages()
 	{
 		$user_id = $this->session->userdata('user_id');
@@ -31,6 +33,14 @@ class Welcome extends CI_Controller
 		echo json_encode($messages);
 	}
 
+	public function update_online_status()
+	{
+		$user_id = $this->session->userdata('user_id');
+		if ($user_id) {
+			$this->User_model->update_last_seen($user_id);
+			echo json_encode(['status' => 'success']);
+		}
+	}
 	public function send_message()
 	{
 		$sender_id = $this->session->userdata('user_id');
