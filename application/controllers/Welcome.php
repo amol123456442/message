@@ -17,13 +17,12 @@ class Welcome extends CI_Controller
 	}
 
 	public function index()
-	{
-		$user_id = $this->session->userdata('user_id');
-		$data['user_name'] = $this->session->userdata('full_name');
-		$data['users'] = $this->User_model->get_all_users_except($user_id);
-		$this->load->view('home', $data);
-	}
-
+{
+    $user_id = $this->session->userdata('user_id');
+    $data['user_name'] = $this->session->userdata('user_name'); // ✅ use 'user_name'
+    $data['users'] = $this->User_model->get_all_users_except($user_id);
+    $this->load->view('home', $data);
+}
 	public function get_messages()
 	{
 		$user_id = $this->session->userdata('user_id');

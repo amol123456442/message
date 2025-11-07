@@ -22,4 +22,5 @@ class Message_model extends CI_Model
         $this->db->order_by('m.created_at', 'ASC');
         return $this->db->get()->result();
     }
+    
 }
