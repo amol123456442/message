@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Messenger</title>
@@ -92,8 +93,14 @@
       position: relative;
     }
 
-    .sidebar .user:hover { background: #f5f6f8; }
-    .sidebar .user.active { background: #e7f3ff; border-left: 4px solid #0866ff; }
+    .sidebar .user:hover {
+      background: #f5f6f8;
+    }
+
+    .sidebar .user.active {
+      background: #e7f3ff;
+      border-left: 4px solid #0866ff;
+    }
 
     .user img {
       width: 56px;
@@ -137,9 +144,17 @@
     }
 
     @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.3); }
-      100% { transform: scale(1); }
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.3);
+      }
+
+      100% {
+        transform: scale(1);
+      }
     }
 
     /* Chat area */
@@ -229,16 +244,26 @@
       justify-content: center;
       width: 36px;
       height: 36px;
-      background: rgba(255,255,255,0.3);
+      background: rgba(255, 255, 255, 0.3);
       border-radius: 50%;
       margin-top: 8px;
       cursor: pointer;
     }
 
-    .download-btn:hover { background: rgba(255,255,255,0.5); }
-    .download-btn i { font-size: 18px; color: white; }
+    .download-btn:hover {
+      background: rgba(255, 255, 255, 0.5);
+    }
 
-    audio { width: 300px !important; height: 42px; border-radius: 12px; }
+    .download-btn i {
+      font-size: 18px;
+      color: white;
+    }
+
+    audio {
+      width: 300px !important;
+      height: 42px;
+      border-radius: 12px;
+    }
 
     /* Footer */
     .chat-footer {
@@ -250,7 +275,9 @@
       gap: 10px;
     }
 
-    .attach-btn, .like-btn, #sendBtn {
+    .attach-btn,
+    .like-btn,
+    #sendBtn {
       width: 46px;
       height: 46px;
       border-radius: 50%;
@@ -264,8 +291,15 @@
       color: #65676b;
     }
 
-    .attach-btn { color: #0866ff; font-size: 24px; }
-    .attach-btn:hover, .like-btn:hover { background: #d8dadf; }
+    .attach-btn {
+      color: #0866ff;
+      font-size: 24px;
+    }
+
+    .attach-btn:hover,
+    .like-btn:hover {
+      background: #d8dadf;
+    }
 
     #sendBtn {
       background: #0866ff !important;
@@ -305,29 +339,91 @@
       display: none;
     }
 
-    @keyframes slideUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-    @keyframes fadeOut { to { opacity: 0; transform: translateY(20px); } }
-    @keyframes msgFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideUp {
+      from {
+        transform: translateY(100px);
+        opacity: 0;
+      }
 
-    .chat-body::-webkit-scrollbar, .sidebar::-webkit-scrollbar {
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeOut {
+      to {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+    }
+
+    @keyframes msgFade {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .chat-body::-webkit-scrollbar,
+    .sidebar::-webkit-scrollbar {
       width: 6px;
     }
 
-    .chat-body::-webkit-scrollbar-thumb, .sidebar::-webkit-scrollbar-thumb {
-      background: rgba(0,0,0,0.2);
+    .chat-body::-webkit-scrollbar-thumb,
+    .sidebar::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.2);
       border-radius: 3px;
     }
 
     @media (max-width: 768px) {
-      .chat-wrapper { flex-direction: column; height: 100vh; border-radius: 0; }
-      .sidebar { width: 100%; height: 180px; border-bottom: 1px solid #ddd; }
-      #userList { display: flex; overflow-x: auto; padding: 10px; }
-      .sidebar .user { flex-direction: column; min-width: 90px; text-align: center; }
-      .user img { width: 50px; height: 50px; }
-      audio { width: 300px !important; }
+      .chat-wrapper {
+        flex-direction: column;
+        height: 100vh;
+        border-radius: 0;
+      }
+
+      .sidebar {
+        width: 100%;
+        height: 180px;
+        border-bottom: 1px solid #ddd;
+      }
+
+      #userList {
+        display: flex;
+        overflow-x: auto;
+        padding: 10px;
+      }
+
+      .sidebar .user {
+        flex-direction: column;
+        min-width: 90px;
+        text-align: center;
+      }
+
+      .user img {
+        width: 50px;
+        height: 50px;
+      }
+
+      audio {
+        width: 300px !important;
+      }
     }
   </style>
+  <script>
+// Page load hote hi permission maang lo
+if ("Notification" in window && Notification.permission === "default") {
+  Notification.requestPermission();
+}
+</script>
 </head>
+
 <body>
   <div class="chat-wrapper">
     <!-- Sidebar -->
@@ -413,7 +509,7 @@
     }
 
     function showPopup(sender, msg) {
-      $("#msgPopup").stop(true,true)
+      $("#msgPopup").stop(true, true)
         .html(`<b>${sender}:</b> ${msg.substring(0,50)}${msg.length>50?'...':''}`)
         .fadeIn();
       setTimeout(() => $("#msgPopup").fadeOut(), 3500);
@@ -464,7 +560,10 @@
       if (msg.match(/^https?:\/\/.+\.(jpg|jpeg|png|gif|mp4|webm|ogg|mp3|wav|pdf|docx?|xlsx?|pptx?|zip|rar|7z)$/i)) {
         appendFileMessage(msg, type);
       } else {
-        const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        const time = new Date().toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit'
+        });
         $("#chatBody").append(`<div class="message ${type}">${msg}<div class="message-time">${time}</div></div>`);
         $("#chatBody").scrollTop($("#chatBody")[0].scrollHeight);
       }
@@ -585,7 +684,7 @@
             return;
           }
 
-          let newMsgs = data.filter(m => 
+          let newMsgs = data.filter(m =>
             !cachedMessages[receiverId].some(c => c.id === m.id)
           );
 
@@ -616,6 +715,34 @@
     setInterval(() => {
       $.post("<?= base_url('welcome/update_online_status') ?>");
     }, 30000);
+
+    function showRealNotification(name, msg, senderId) {
+  if (Notification.permission === "granted" && (document.hidden || !document.hasFocus())) {
+    const notif = new Notification(name + " ने message bheja", {
+      body: msg.length > 70 ? msg.substr(0,70)+"..." : msg,
+      icon: "https://img.freepik.com/premium-vector/vector-flat-illustration-grayscale-avatar-user-profile-person-icon-gender-neutral-silhouette-profile-picture-suitable-social-media-profiles-icons-screensavers-as-templatex9xa_719432-2210.jpg?w=740",
+      tag: "msg_"+senderId
+    });
+
+    notif.onclick = function() {
+      window.focus();
+      document.querySelector(`.user[data-id="${senderId}"]`).click();
+      notif.close();
+    };
+
+    // Sound + Title blink
+    document.getElementById("msgSound").play();
+    let i = 0;
+    let blink = setInterval(() => {
+      document.title = i % 2 == 0 ? "("+name+") New Message!" : "Messenger";
+      i++;
+    }, 800);
+    notif.onclose = () => clearInterval(blink);
+  }
+}
   </script>
+
+  
 </body>
+
 </html>

@@ -82,4 +82,6 @@ class Welcome extends CI_Controller
 
 		echo json_encode(['status' => 'success', 'file_url' => $file_url]);
 	}
+
+	
 }
