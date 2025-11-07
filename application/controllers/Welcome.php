@@ -8,8 +8,8 @@ class Welcome extends CI_Controller
 	{
 		parent::__construct();
 		$this->load->model(['User_model', 'Message_model']);
-		$this->load->library('session');
-		$this->load->helper('url');
+		$this->load->library(['session', 'upload']);
+		$this->load->helper(['url', 'form']);
 
 		if (!$this->session->userdata('user_id')) {
 			redirect('auth/login');
@@ -41,89 +41,36 @@ class Welcome extends CI_Controller
 		$this->Message_model->send_message($sender_id, $receiver_id, $message);
 		echo json_encode(['status' => 'success']);
 	}
-	public function check_new_message()
-	{
-		$user_id = $this->session->userdata('user_id');
-		$message = $this->Message_model->get_latest_unread_message($user_id);
 
-		if ($message) {
-			$this->Message_model->mark_as_read($message->id);
-			echo json_encode([
-				'new_message' => true,
-				'sender_name' => $this->User_model->get_user_name($message->sender_id),
-				'message' => $message->message
-			]);
-		} else {
-			echo json_encode(['new_message' => false]);
+	// 📎 File Upload API
+	public function send_file_message()
+	{
+		$sender_id = $this->session->userdata('user_id');
+		$receiver_id = $this->input->post('receiver_id');
+
+		if (empty($receiver_id)) {
+			echo json_encode(['status' => 'error', 'msg' => 'Receiver not selected']);
+			return;
 		}
-	}
 
-	// Welcome.php controller mein add karo
+		$config['upload_path']   = './uploads/';
+		$config['allowed_types'] = 'jpg|jpeg|png|gif|mp4|mp3|wav|pdf|doc|docx|xls|xlsx|ppt|pptx';
+		$config['max_size']      = 10000;
+		$config['encrypt_name']  = TRUE;
 
-	public function save_subscription()
-	{
-		$input = json_decode(file_get_contents('php://input'));
-		$user_id = $this->session->userdata('user_id');
+		if (!is_dir('./uploads')) mkdir('./uploads', 0777, true);
 
-		$data = [
-			'user_id' => $user_id,
-			'endpoint' => $input->endpoint,
-			'keys' => json_encode($input->keys)
-		];
+		$this->upload->initialize($config);
 
-		$this->db->replace('push_subscriptions', $data);
-	}
-
-	// Send push to all devices of receiver
-	private function sendPushNotification($receiver_id, $sender_name, $message)
-	{
-		$this->db->where('user_id', $receiver_id);
-		$subs = $this->db->get('push_subscriptions')->result();
-
-		foreach ($subs as $sub) {
-			$subscription = [
-				'endpoint' => $sub->endpoint,
-				'keys' => json_decode($sub->keys)
-			];
-
-			$payload = json_encode([
-				'sender' => $sender_name,
-				'message' => $message
-			]);
-
-			$this->sendWebPush($subscription, $payload);
+		if (!$this->upload->do_upload('file')) {
+			echo json_encode(['status' => 'error', 'msg' => $this->upload->display_errors()]);
+			return;
 		}
-	}
 
-	private function sendWebPush($subscription, $payload)
-	{
-		$endpoint = $subscription['endpoint'];
-		$auth = $subscription['keys']->auth;
-		$p256dh = $subscription['keys']->p256dh;
+		$fileData = $this->upload->data();
+		$file_url = base_url('uploads/' . $fileData['file_name']);
+		$this->Message_model->send_message($sender_id, $receiver_id, $file_url);
 
-		$vapidPublicKey = 'YOUR_PUBLIC_VAPID_KEY';
-		$vapidPrivateKey = 'YOUR_PRIVATE_VAPID_KEY';
-
-		$headers = [
-			'Authorization: WebPush ' . $this->generateVapidToken($endpoint, $vapidPublicKey, $vapidPrivateKey),
-			'Content-Type: application/octet-stream',
-			'TTL: 2419200'
-		];
-
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $endpoint);
-		curl_setopt($ch, CURLOPT_POST, true);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-		curl_exec($ch);
-		curl_close($ch);
-	}
-
-	private function generateVapidToken($audience, $publicKey, $privateKey)
-	{
-		// Simple VAPID generation (use library in production)
-		// For now, we'll skip full JWT - use web-push-php library
-		return 'vapid t=ey...'; // better to use library
+		echo json_encode(['status' => 'success', 'file_url' => $file_url]);
 	}
 }
